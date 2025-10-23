@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Breathe Nature - Reconnect with the Earth</title>
+    
+    <!-- SEO & Meta Tags -->
+    <meta name="description" content="A serene, minimalist website themed around nature, calmness, and environmental awareness. Reconnect with the earth.">
+    <meta name_property="og:title" content="Breathe Nature">
+    <meta name_property="og:description" content="Find stillness in every breath. A serene, minimalist website themed around nature, calmness, and environmental awareness.">
+    <meta name_property="og:type" content="website">
+    <meta name_property="og:image" content="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&h=630&fit=crop&auto=format">
+    <meta name_property="og:url" content="https://breathingnature.dev">
+    
+    <!-- Favicon (Emoji SVG) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- 
+      Embedded CSS
+      Features:
+      - CSS Variables for Light/Dark Theming
+      - Modern CSS Nesting
+      - @property for animated properties
+      - Container Queries for gallery
+      - :has() for gallery hover effects
+      - CSS-driven Parallax (scroll-timeline animation)
+      - Mobile-first responsive design
+    -->
+    <style>
+      /* 1. CSS Reset and @property definitions */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Animated property for the scroll progress bar */
+      @property --scroll-progress {
+        syntax: '<percentage>';
+        inherits: false;
+        initial-value: 0%;
+      }
+
+      /* 2. Root Variables and Theming */
+      :root {
+        /* Light Mode (Default) */
+        --bg-color: #fcfcf9; /* Very light beige/off-white */
+        --text-color: #4a4a4a;
+        --heading-color: #2c4a3b; /* Forest green */
+        --accent-color: #a8b8a2; /* Misty gray/green */
+        --card-bg: #ffffff;
+        --border-color: #e8e8e3;
+        --hero-text-color: #2c4a3b;
+        --hero-text-shadow: 1px 1px 20px rgba(255, 255, 255, 0.7);
+
+        /* Fonts */
+        --font-heading: 'Playfair Display', serif;
+        --font-body: 'Inter', sans-serif;
+
+        /* Layout */
+        --content-width: 70ch;
+        --nav-height: 70px;
+        
+        /* Transitions */
+        --transition-speed: 0.3s ease;
+      }
+
+      [data-theme="dark"] {
+        --bg-color: #1a2b23; /* Dark forest green */
+        --text-color: #c8d1c9; /* Misty gray text */
+        --heading-color: #f0f3f1; /* Off-white heading */
+        --accent-color: #8da388; /* Lighter green accent */
+        --card-bg: #2b3f34;
+        --border-color: #3f5247;
+        --hero-text-color: #f0f3f1;
+        --hero-text-shadow: 1px 1px 20px rgba(0, 0, 0, 0.5);
+      }
+
+      /* 3. Base Styles */
+      html {
+        scroll-behavior: smooth;
+        /* Custom scrollbar */
+        scrollbar-width: thin;
+        scrollbar-color: var(--accent-color) var(--bg-color);
+      }
+
+      body {
+        font-family: var(--font-body);
+        color: var(--text-color);
+        background-color: var(--bg-color);
+        line-height: 1.7;
+        transition: background-color var(--transition-speed), color var(--transition-speed);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      main {
+        display: block; /* For IE11 */
+        overflow-x: hidden;
+      }
+
+      h1, h2, h3, h4, h5 {
+        font-family: var(--font-heading);
+        color: var(--heading-color);
+        line-height: 1.2;
+        font-weight: 500;
+        transition: color var(--transition-speed);
+      }
+      
+      h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); }
+      h2 { font-size: clamp(2rem, 5vw, 2.75rem); }
+      h3 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+      p { margin-bottom: 1.5rem; }
+      a { color: var(--accent-color); text-decoration: none; }
+      img, video { max-width: 100%; height: auto; display: block; object-fit: cover; }
+      
+      .section-container {
+        max-width: var(--content-width);
+        margin: 0 auto;
+        padding: clamp(3rem, 10vw, 6rem) 2rem;
+      }
+      
+      .section-title {
+        text-align: center;
+        margin-bottom: 3rem;
+        font-weight: 700;
+      }
+      
+      .read-more-link {
+        font-weight: 500;
+        color: var(--heading-color);
+        text-decoration: none;
+        position: relative;
+        
+        &::after {
+          content: '→';
+          margin-left: 0.25em;
+          transition: transform 0.3s ease;
+          display: inline-block;
+        }
+        
+        &:hover::after {
+          transform: translateX(4px);
+        }
+        
+        /* New state for when content is visible */
+        &.is-open::after {
+          content: '←';
+        }
+      }
+
+      /* 4. Bonus: Preloader */
+      .preloader {
+        position: fixed;
+        inset: 0;
+        background-color: var(--bg-color);
+        z-index: 10000;
+        display: grid;
+        place-items: center;
+        font-family: var(--font-heading);
+        font-size: 1.25rem;
+        color: var(--heading-color);
+        opacity: 1;
+        transition: opacity 0.75s ease, visibility 0.75s;
+        
+        &.hidden {
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+        }
+      }
+      
+      /* 5. Bonus: Scroll Progress Bar */
+      .scroll-progress-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 5px;
+        background-color: var(--accent-color);
+        width: var(--scroll-progress); /* Animated by JS */
+        z-index: 9000;
+        transition: width 0.1s linear; /* Smooths the JS update */
+      }
+
+      /* 6. Header / Navbar */
+      .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--nav-height);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 2rem;
+        z-index: 1000;
+        transition: background-color 0.3s ease;
+        
+        /* Glassmorphism background */
+        &::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background-color: color-mix(in srgb, var(--bg-color) 80%, transparent);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          z-index: -1;
+          transition: background-color var(--transition-speed);
+        }
+        
+        .logo {
+          font-family: var(--font-heading);
+          font-weight: 700;
+          font-size: 1.5rem;
+          color: var(--heading-color);
+          text-decoration: none;
+        }
+        
+        .nav-links {
+          ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+          }
+          
+          a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            font-weight: 500;
+            position: relative;
+            
+            &::after {
+              content: '';
+              position: absolute;
+              bottom: -4px;
+              left: 0;
+              width: 0;
+              height: 2px;
+              background-color: var(--accent-color);
+              transition: width var(--transition-speed);
+            }
+            
+            &:hover::after,
+            &.active::after {
+              width: 100%;
+            }
+          }
+        }
+        
+        /* Mobile Nav Toggle (hidden on desktop) */
+        .mobile-nav-toggle { display: none; }
+      }
+      
+      /* 7. Bonus: Theme Toggle Button */
+      .theme-toggle {
+        background: none;
+        border: 1px solid var(--border-color);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        transition: background-color var(--transition-speed), border-color var(--transition-speed);
+        
+        &:hover {
+          background-color: color-mix(in srgb, var(--accent-color) 20%, transparent);
+        }
+        
+        svg {
+          width: 18px;
+          height: 18px;
+          stroke: var(--heading-color);
+          transition: stroke var(--transition-speed);
+        }
+
+        .icon-sun, .icon-moon { transition: opacity 0.3s, transform 0.3s; }
+        .icon-sun { opacity: 0; transform: scale(0); }
+        .icon-moon { opacity: 1; transform: scale(1); }
+      }
+      
+      [data-theme="dark"] .theme-toggle {
+        .icon-sun { opacity: 1; transform: scale(1); }
+        .icon-moon { opacity: 0; transform: scale(0); }
+      }
+
+      /* 8. Hero Section */
+      #home {
+        height: 100vh;
+        min-height: 600px;
+        display: grid;
+        place-items: center;
+        position: relative;
+        overflow: hidden;
+        
+        /* 3D Canvas */
+        #three-canvas {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 1;
+          /* Subtle parallax effect from JS */
+          transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        
+        .hero-content {
+          position: relative;
+          z-index: 2;
+          text-align: center;
+          color: var(--hero-text-color);
+          text-shadow: var(--hero-text-shadow);
+          /* Subtle parallax effect from JS */
+          transition: transform 0.1s cubic-bezier(0.2, 0.8, 0.2, 1);
+          
+          h1 {
+            color: var(--hero-text-color);
+            margin-bottom: 1rem;
+          }
+          
+          p {
+            font-size: clamp(1rem, 3vw, 1.25rem);
+            font-weight: 300;
+            margin-bottom: 1rem;
+          }
+          
+          .hero-subtitle {
+             font-size: clamp(0.9rem, 2vw, 1.1rem);
+             margin-bottom: 2rem;
+          }
+          
+          .cta-button {
+            font-family: var(--font-body);
+            font-weight: 500;
+            background-color: var(--heading-color);
+            color: var(--bg-color);
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            
+            &:hover {
+              transform: translateY(-3px);
+              box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            }
+          }
+        }
+      }
+      
+      /* 9. Scroll-triggered Animations (using Intersection Observer) */
+      .reveal-on-scroll {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                    transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        transition-delay: 0.1s;
+        
+        &.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        
+        /* Staggered children animation */
+        & > * {
+          opacity: 0;
+          transform: translateY(20px);
+          transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                      transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        
+        &.visible > * {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        
+        /* Stagger delays */
+        &.visible > *:nth-child(1) { transition-delay: 0.1s; }
+        &.visible > *:nth-child(2) { transition-delay: 0.2s; }
+        &.visible > *:nth-child(3) { transition-delay: 0.3s; }
+        &.visible > *:nth-child(4) { transition-delay: 0.4s; }
+        &.visible > *:nth-child(5) { transition-delay: 0.5s; }
+      }
+      
+      @media (prefers-reduced-motion: reduce) {
+        .reveal-on-scroll,
+        .reveal-on-scroll.visible,
+        .reveal-on-scroll > *,
+        .reveal-on-scroll.visible > * {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+      }
+
+      /* 10. About Section */
+      #about {
+        .about-content {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 3rem;
+          align-items: center;
+        }
+        
+        .about-image img {
+          border-radius: 12px;
+          box-shadow: 0 15px 30px -10px rgba(0,0,0,0.1);
+        }
+        
+        @media (min-width: 768px) {
+          .about-content {
+            grid-template-columns: 1fr 1fr;
+            
+            /* Swap order */
+            .about-text {
+              order: 2;
+            }
+            .about-image {
+              order: 1;
+            }
+          }
+        }
+      }
+
+      /* 11. Gallery Section (with Container Queries & :has()) */
+      #gallery {
+        .gallery-grid {
+          display: grid;
+          /* Responsive grid using minmax */
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 1.5rem;
+        }
+        
+        .gallery-card {
+          /* This enables container queries */
+          container-type: inline-size;
+          
+          border-radius: 12px;
+          overflow: hidden;
+          position: relative;
+          background-color: var(--card-bg);
+          box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+          
+          /* Modern 3D hover effect */
+          transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+                      box-shadow 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+          transform-style: preserve-3d;
+          will-change: transform;
+          
+          img {
+            width: 100%;
+            height: 100%;
+            aspect-ratio: 4 / 3; /* Key feature */
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+          }
+          
+          .card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            background: linear-gradient(0deg, rgba(0,0,0,0.6) 0%, transparent 100%);
+            color: white;
+            transform: translateY(100%);
+            opacity: 0;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+          }
+          
+          /* --- :has() pseudo-class --- */
+          /* Apply effects to the CARD based on the child IMG being hovered */
+          &:has(img:hover) {
+            transform: perspective(1000px) rotateY(3deg) rotateX(1deg) scale(1.03);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.2);
+            
+            img {
+              transform: scale(1.1); /* Zoom image inside */
+            }
+            
+            .card-overlay {
+              transform: translateY(0);
+              opacity: 1;
+            }
+          }
+          
+          /* --- Container Query --- */
+          /* Change overlay text size based on card width */
+          .card-overlay-title {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+          }
+          
+          @container (min-width: 350px) {
+            .card-overlay-title {
+              font-size: 1.35rem;
+            }
+          }
+        }
+      }
+      
+      /* 12. NEW: Reflections Section */
+      #reflections {
+         /* Slightly different background to separate it */
+         background-color: color-mix(in srgb, var(--bg-color) 95%, var(--accent-color) 5%);
+         
+         .reflections-grid {
+           display: grid;
+           grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+           gap: 2rem;
+         }
+         
+         .reflection-card {
+           background-color: var(--card-bg);
+           border-radius: 12px;
+           box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+           overflow: hidden;
+           transition: transform 0.3s ease, box-shadow 0.3s ease;
+           
+           &:hover {
+             transform: translateY(-5px);
+             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+           }
+           
+           img {
+             aspect-ratio: 16 / 9;
+           }
+           
+           .card-content {
+             padding: 1.5rem;
+             
+             p {
+               font-size: 0.95rem;
+               margin-bottom: 1.5rem;
+             }
+           }
+           
+           .card-content {
+             padding: 1.5rem;
+             
+             p {
+               font-size: 0.95rem;
+               margin-bottom: 1.5rem;
+             }
+             
+             /* Styles for the expandable content */
+             .more-content {
+               max-height: 0;
+               overflow: hidden;
+               opacity: 0;
+               transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out, margin-top 0.5s ease-in-out;
+               margin-top: 0;
+               
+               p {
+                 font-size: 0.95rem; /* Ensure consistent font size */
+               }
+             }
+             
+             .more-content.visible {
+               margin-top: 1.5rem; /* Add space ONLY when open */
+               max-height: 1000px; /* Large enough for any content */
+               opacity: 1;
+             }
+             
+             .read-more-link {
+               cursor: pointer; /* Show it's clickable */
+             }
+           }
+         }
+      }
+
+      /* 13. Sustainability Section (CSS Parallax) */
+      #sustainability {
+        min-height: 70vh;
+        display: grid;
+        place-items: center;
+        position: relative;
+        overflow: hidden;
+        background-color: #333; /* Fallback */
+        
+        .parallax-bg {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 150%; /* Taller than section for parallax */
+          background-image: url('https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?ixlib=rb-4.0.3&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1920&fit=max&auto=format');
+          background-size: cover;
+          background-position: center;
+          z-index: 1;
+          
+          /* CSS Scroll-linked Animation */
+          animation: parallax-scroll linear;
+          animation-timeline: view();
+          /* Animate from when element is -50% in view to 150% in view */
+          animation-range: entry -50% cover 150%;
+        }
+        
+        @keyframes parallax-scroll {
+          from { transform: translateY(-33%); } /* Start higher */
+          to { transform: translateY(0%); } /* End at normal position */
+        }
+
+        /* Overlay to darken the BG image */
+        &::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background-color: rgba(0,0,0,0.4);
+          z-index: 2;
+        }
+        
+        .parallax-content {
+          position: relative;
+          z-index: 3;
+          text-align: center;
+          color: white;
+          background: color-mix(in srgb, var(--card-bg) 80%, transparent);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          padding: 2.5rem;
+          border-radius: 12px;
+          max-width: 65ch;
+          
+          h2, p {
+            color: var(--heading-color);
+          }
+          
+          p:last-of-type {
+            margin-bottom: 0;
+          }
+          
+          [data-theme="dark"] & {
+            h2, p {
+              color: var(--heading-color); /* Stays light on dark bg */
+            }
+          }
+        }
+      }
+
+      /* 14. Contact Section */
+      #contact {
+        .contact-intro {
+          text-align: center;
+          max-width: 60ch;
+          margin: 0 auto 3rem auto;
+        }
+        
+        #contact-form {
+          display: grid;
+          gap: 1.5rem;
+          max-width: 600px;
+          margin: 0 auto;
+          
+          .form-group {
+            display: flex;
+            flex-direction: column;
+            
+            label {
+              font-size: 0.9rem;
+              font-weight: 500;
+              margin-bottom: 0.5rem;
+            }
+            
+            input,
+            textarea {
+              padding: 0.9rem 1rem;
+              border: 1px solid var(--border-color);
+              border-radius: 8px;
+              background-color: var(--card-bg);
+              color: var(--text-color);
+              font-family: var(--font-body);
+              font-size: 1rem;
+              transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+              
+              &:focus {
+                outline: none;
+                border-color: var(--accent-color);
+                box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 30%, transparent);
+              }
+            }
+            
+            textarea {
+              min-height: 150px;
+              resize: vertical;
+            }
+          }
+          
+          /* Animated Gradient Button */
+          .submit-button {
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            
+            background: linear-gradient(90deg, 
+              var(--accent-color), 
+              var(--heading-color), 
+              var(--accent-color), 
+              var(--heading-color)
+            );
+            background-size: 300% 100%;
+            animation: gradient-flow 6s ease infinite;
+            transition: transform 0.3s ease;
+            
+            &:hover {
+              transform: scale(1.02);
+            }
+          }
+          
+          @keyframes gradient-flow {
+            0% { background-position: 300% 50%; }
+            50% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+          }
+        }
+        
+        #form-success-message {
+          display: none; /* Shown by JS */
+          text-align: center;
+          margin-top: 2rem;
+          color: var(--heading-color);
+          font-weight: 500;
+          font-family: var(--font-heading);
+          font-size: 1.1rem;
+        }
+      }
+      
+      /* 15. Footer */
+      .footer {
+        text-align: center;
+        padding: 3rem 1rem;
+        border-top: 1px solid var(--border-color);
+        transition: border-color var(--transition-speed);
+        
+        .footer-logo {
+          font-family: var(--font-heading);
+          font-weight: 700;
+          font-size: 1.25rem;
+          color: var(--heading-color);
+          margin-bottom: 1rem;
+        }
+        
+        .footer-mission {
+          font-size: 0.9rem;
+          color: var(--text-color);
+          max-width: 60ch;
+          margin: 0 auto 1.5rem auto;
+        }
+        
+        .footer-links {
+          list-style: none;
+          display: flex;
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 1.5rem;
+          margin-bottom: 1.5rem;
+          
+          a {
+            font-size: 0.9rem;
+            font-weight: 500;
+          }
+        }
+        
+        .social-links {
+          display: flex;
+          justify-content: center;
+          gap: 1.5rem;
+          margin-bottom: 1.5rem;
+          
+          svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--text-color);
+            transition: fill var(--transition-speed), transform 0.3s ease;
+            
+            &:hover {
+              fill: var(--heading-color);
+              transform: scale(1.1);
+            }
+          }
+        }
+        
+        .footer-copyright {
+          font-size: 0.85rem;
+          color: color-mix(in srgb, var(--text-color) 70%, transparent);
+        }
+      }
+      
+      /* 16. Responsive Design (Mobile-First) */
+      @media (max-width: 767px) {
+        .header {
+          .nav-links {
+            display: none; /* Basic mobile: hide nav. Advanced: build menu */
+          }
+          .mobile-nav-toggle {
+            display: block;
+            /* Simple hamburger icon */
+            background: none;
+            border: none;
+            cursor: pointer;
+            svg {
+              width: 28px;
+              height: 28px;
+              stroke: var(--heading-color);
+            }
+          }
+        }
+        
+        #about .about-content {
+          /* Stack on mobile */
+          .about-text { order: 1; }
+          .about-image { order: 2; }
+        }
+        
+        .footer-links {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+      }
+      
+    </style>
+</head>
+
+<body>
+
+    <!-- Bonus: Preloader -->
+    <div class="preloader" id="preloader">
+      <p>Breathing In...</p>
+    </div>
+
+    <!-- Bonus: Scroll Progress Bar -->
+    <div class="scroll-progress-bar" id="scroll-progress-bar"></div>
+
+    <!-- 1. Header / Navbar -->
+    <header class="header" id="header">
+        <a href="#home" class="logo">Breathe Nature</a>
+        
+        <nav class="nav-links" id="nav-links">
+            <ul>
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#gallery" class="nav-link">Gallery</a></li>
+                <li><a href="#reflections" class="nav-link">Reflections</a></li>
+                <li><a href="#sustainability" class="nav-link">Sustainability</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+        </nav>
+        
+        <!-- Theme Toggle -->
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light and dark mode">
+            <!-- Sun Icon -->
+            <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <!-- Moon Icon -->
+            <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+        
+        <!-- Mobile Nav Toggle (for future use) -->
+        <button class="mobile-nav-toggle" aria-label="Open navigation menu" style="display: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+        <!-- 2. Hero Section -->
+        <section id="home">
+            <!-- Three.js Canvas -->
+            <canvas id="three-canvas"></canvas>
+            
+            <div class="hero-content reveal-on-scroll">
+                <h1>Reconnect with the Earth.</h1>
+                <p>Find stillness in every breath.</p>
+                <p class="hero-subtitle">Explore the quiet pulse of the planet.</p>
+                <a href="#about" class="cta-button">Explore Nature</a>
+            </div>
+        </section>
+
+        <!-- 3. About Section -->
+        <section id="about">
+            <div class="section-container">
+                <div class="about-content">
+                    <div class="about-text reveal-on-scroll">
+                        <h2>Nature is not a place to visit — it is home.</h2>
+                        <p>We believe the web can reflect nature’s harmony — calm, intentional, and alive. Breathe Nature invites you to pause, explore, and rediscover connection through simplicity and movement.</p>
+                        <p>Our mission is to remind people of the balance, peace, and rhythm found in the natural world. Every tree, river, and gust of wind tells a story of patience and renewal.</p>
+                        <p>In the rush of the modern world, we often forget our roots. We forget the feeling of soil underfoot, the sound of wind through pines, or the patience of a river. This space is an anchor back to that essential connection.</p>
+                        <p>From the intricate spiral of a seashell to the vast canopy of a rainforest, nature is the ultimate designer. It teaches us resilience, adaptation, and the beauty of slowing down. Our goal is to bring a small piece of that tranquility into your digital life.</p>
+                    </div>
+                    <div class="about-image reveal-on-scroll">
+                        <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&auto=format" 
+                             alt="A calm, sunlit forest path"
+                             loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Gallery Section -->
+        <section id="gallery">
+            <div class="section-container">
+                <h2 class="section-title reveal-on-scroll">Moments of Stillness</h2>
+                
+                <div class="gallery-grid">
+                    <!-- Gallery Item 1 -->
+                    <div class="gallery-card reveal-on-scroll">
+                        <img src="https://plus.unsplash.com/premium_photo-1673240367301-4e7d28a54281?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=2069?auto=format&fit=crop&w=600&h=450&q=80" loading="lazy" alt="Misty mountain lake">
+                        <div class="card-overlay">
+                            <h3 class="card-overlay-title">Misty Lake</h3>
+                        </div>
+                    </div>
+                    <!-- Gallery Item 2 -->
+                    <div class="gallery-card reveal-on-scroll">
+                        <img src="https://plus.unsplash.com/premium_photo-1707563216083-da13f6938516?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=2072?auto=format&fit=crop&w=600&h=450&q=80" loading="lazy" alt="Green valley reflection in a lake">
+                        <div class="card-overlay">
+                            <h3 class="card-overlay-title">Valley Reflection</h3>
+                        </div>
+                    </div>
+                    <!-- Gallery Item 3 -->
+                    <div class="gallery-card reveal-on-scroll">
+                        <img src="https://images.unsplash.com/photo-1718661934073-ecfd78710651?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1074?auto=format&fit=crop&w=600&h=450&q=80" loading="lazy" alt="Winding river through green fields">
+                        <div class="card-overlay">
+                            <h3 class="card-overlay-title">Winding River</h3>
+                        </div>
+                    </div>
+                    <!-- Gallery Item 4 -->
+                    <div class="gallery-card reveal-on-scroll">
+                        <img src="https://images.unsplash.com/photo-1431794062232-2a99a5431c6c?auto=format&fit=crop&w=600&h=450&q=80" loading="lazy" alt="Powerful waterfall in a lush forest">
+                        <div class="card-overlay">
+                            <h3 class="card-overlay-title">Forest Waterfall</h3>
+                        </div>
+                    </div>
+                    <!-- Gallery Item 5 -->
+                    <div class="gallery-card reveal-on-scroll">
+                        <img src="https://images.unsplash.com/photo-1604464002959-af7e77507589?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170?auto=format&fit=crop&w=600&h=450&q=80" loading="lazy" alt="Sunlight filtering through trees in a forest">
+                        <div class="card-overlay">
+                            <h3 class="card-overlay-title">Sunlight Rays</h3>
+                        </div>
+                    </div>
+                    <!-- Gallery Item 6 -->
+                    <div class="gallery-card reveal-on-scroll">
+                        <img src="https://images.unsplash.com/photo-1605087306555-27d713325b3b?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170?auto=format&fit=crop&w=600&h=450&q=80" loading="lazy" alt="Close-up of a green fern leaf">
+                        <div class="card-overlay">
+                            <h3 class="card-overlay-title">Fern Leaf</h3>
+                        </div>
+                    </div>
+                    <!-- Gallery Item 7 (NEW) -->
+                    <div class="gallery-card reveal-on-scroll">
+                        <img src="https://images.unsplash.com/photo-1490682143684-14369e18dce8?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170?auto=format&fit=crop&w=600&h=450&q=80" loading="lazy" alt="Snow-capped mountain range at sunrise">
+                        <div class="card-overlay">
+                            <h3 class="card-overlay-title">Mountain Sunrise</h3>
+                        </div>
+                    </div>
+                    <!-- Gallery Item 8 (NEW) -->
+                    <div class="gallery-card reveal-on-scroll">
+                        <img src="https://images.unsplash.com/photo-1757445351887-7ca6a4ebea32?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170?auto=format&fit=crop&w=600&h=450&q=80" loading="lazy" alt="Small bird on a mossy branch">
+                        <div class="card-overlay">
+                            <h3 class="card-overlay-title">Quiet Perch</h3>
+                        </div>
+                    </div>
+                    <!-- Gallery Item 9 (NEW) -->
+                    <div class="gallery-card reveal-on-scroll">
+                        <img src="https://images.unsplash.com/photo-1562571373-8ea9b81e756f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170?auto=format&fit=crop&w=600&h=450&q=80" loading="lazy" alt="Sunlight on a green forest floor with moss">
+                        <div class="card-overlay">
+                            <h3 class="card-overlay-title">Forest Floor</h3>
+                        </div>
+                    </div>
+                    <!-- Gallery Item 10 (NEW) -->
+                    <div class="gallery-card reveal-on-scroll">
+                        <img src="https://plus.unsplash.com/premium_photo-1699534957519-1e4b571be973?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170?auto=format&fit=crop&w=600&h=450&q=80" loading="lazy" alt="Sunlight on golden desert sand dunes">
+                        <div class="card-overlay">
+                            <h3 class="card-overlay-title">Desert Dunes</h3>
+                        </div>
+                    </div>
+                    <!-- Gallery Item 11 (NEW) -->
+                    <div class="gallery-card reveal-on-scroll">
+                        <img src="https://images.unsplash.com/photo-1759655172222-5948a9a49bf8?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687?auto=format&fit=crop&w=600&h=450&q=80" loading="lazy" alt="A tall saguaro cactus in the desert">
+                        <div class="card-overlay">
+                            <h3 class="card-overlay-title">Desert Sentinel</h3>
+                        </div>
+                    </div>
+                    <!-- Gallery Item 12 (NEW) -->
+                    <div class="gallery-card reveal-on-scroll">
+                        <img src="https://images.unsplash.com/photo-1494807143020-e958f7a1cc66?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687?auto=format&fit=crop&w=600&h=450&q=80" loading="lazy" alt="Cracked dry earth in a desert">
+                        <div class="card-overlay">
+                            <h3 class="card-overlay-title">Cracked Earth</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. NEW: Reflections Section -->
+        <section id="reflections">
+            <div class="section-container">
+                <h2 class="section-title reveal-on-scroll">Reflections on Nature</h2>
+                
+                <div class="reflections-grid">
+                    <!-- Reflection Card 1 -->
+                    <div class="reflection-card reveal-on-scroll">
+                        <div class="card-content">
+                            <h3>The Art of Forest Bathing (Shinrin-Yoku)</h3>
+                            <p>Discover the Japanese practice of 'forest bathing'—a simple method of being calm and quiet amongst the trees, observing nature around you whilst breathing deeply, to promote health and well-being.</p>
+                            
+                            <!-- Hidden Content -->
+                            <div class="more-content">
+                                <p>This practice has been shown to reduce stress, lower blood pressure, and improve immune function. It's not about hiking or exercise, but simply about *being* in nature and connecting with it through all five senses.</p>
+                                <p>Try it: Find a quiet spot, turn off your phone, and just sit for 20 minutes. What do you hear? What do you smell? What do you see?</p>
+                            </div>
+                            
+                            <a class="read-more-link">Read More</a>
+                        </div>
+                    </div>
+                    <!-- Reflection Card 4 -->
+                    <div class="reflection-card reveal-on-scroll">
+                        <div class="card-content">
+                            <h3>The Whisper of the Wind</h3>
+                            <p>Stop and listen. The wind is more than just moving air; it's the planet's breath, carrying scents of distant rain, the pollen of spring, and the chill of a coming season.</p>
+                            
+                            <!-- Hidden Content -->
+                            <div class="more-content">
+                                <p>It teaches us about the power of unseen forces. We cannot see the wind, but we see its effects: the rustling leaves, the soaring bird, the sculpted canyon. It's a reminder to trust in processes we may not fully understand and to be adaptable to change.</p>
+                            </div>
+                            
+                            <a class="read-more-link">Read More</a>
+                        </div>
+                    </div>
+                    <!-- Reflection Card 5 -->
+                    <div class="reflection-card reveal-on-scroll">
+                        <div class="card-content">
+                            <h3>The Resilience of a Seed</h3>
+                            <p>A single, tiny seed holds the entire blueprint for a magnificent tree. It can lie dormant for years, waiting patiently in the dark for the exact right conditions to spring to life.</p>
+                            
+                            <!-- Hidden Content -->
+                            <div class="more-content">
+                                <p>This is a profound lesson in potential and resilience. It reminds us that great things begin small and that periods of darkness or waiting are not empty, but are often necessary phases of development. Trust in your own potential, even when it's unseen.</p>
+                            </div>
+                            
+                            <a class="read-more-link">Read More</a>
+                        </div>
+                    </div>
+                    <!-- Reflection Card 6 -->
+                    <div class="reflection-card reveal-on-scroll">
+                        <div class="card-content">
+                            <h3>The Community of a Forest</h3>
+                            <p>A forest is not a collection of individual trees; it's a vast, interconnected community. Below the ground, mycelial networks connect roots, allowing trees to share nutrients and warnings.</p>
+                            
+                            <!-- Hidden Content -->
+                            <div class="more-content">
+                                <p>This "Wood Wide Web" shows us that strength lies in connection, not isolation. The forest thrives through mutual support and communication. It's a powerful model for our own communities, built on interdependence and shared resources.</p>
+                            </div>
+                            
+                            <a class="read-more-link">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Sustainability Section -->
+        <section id="sustainability">
+            <!-- This div provides the parallax background image -->
+            <div class="parallax-bg"></div>
+            
+            <div class="parallax-content reveal-on-scroll">
+                <h2>Our planet thrives on balance.</h2>
+                <p>We’re committed to sustainability — digital and ecological. Our servers are powered by renewable energy, and our content inspires mindful design. Every mindful choice restores what we share.</p>
+                <p>Embracing simplicity isn't just an aesthetic; it's an environmental principle. By reducing digital clutter and focusing on what matters, we consume less energy and create a more peaceful web. This is our pledge: to create lightly, tread carefully, and inspire connection to the world around us.</p>
+                <p>Small acts, repeated by many, create profound change. Choosing reusable materials, planting native flowers, or simply spending time to appreciate the world around us builds a culture of care.</p>
+            </div>
+        </section>
+
+        <!-- 7. Contact Section -->
+        <section id="contact">
+            <div class="section-container">
+                <div class="contact-intro reveal-on-scroll">
+                    <h2 class="section-title">Let's Grow Together</h2>
+                    <p>Our community grows from shared stories and ideas. Whether you have a question, a thought to share, or a collaboration in mind, we welcome your voice. Reach out and let us know what's on your mind.</p>
+                </div>
+                
+                <form id="contact-form" class="reveal-on-scroll">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" placeholder="Your story, thought, or question..." required></textarea>
+                    </div>
+                    <button type="submit" class="submit-button">Send Message</button>
+                </form>
+                
+                <p id="form-success-message" style="display: none;">
+                    Your message flows into our forest. Thank you!
+                </D>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 8. Footer -->
+    <footer class="footer">
+        <div class="footer-logo">Breathe Nature</div>
+        <p class="footer-mission">Our mission: To foster a deeper connection with the natural world, one breath at a time.</p>
+        <ul class="footer-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#reflections">Reflections</a></li>
+            <li><a href="#sustainability">Sustainability</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="social-links">
+            <!-- Twitter/X -->
+            <a href="#" aria-label="Twitter">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231L18.244 2.25zM17.105 19.105h1.648L7.009 4.605H5.216l11.89 14.5z"/></svg>
+            </a>
+            <!-- Instagram -->
+            <a href="#" aria-label="Instagram">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.225-1.664 4.771-4.919 4.919-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.646-.07-4.85s.012-3.584.07-4.85c.149-3.227 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163zm0 1.626c-3.141 0-3.473.01-4.692.067-2.695.123-3.878 1.318-3.998 3.998-.058 1.22-.067 1.549-.067 4.691s.01 3.474.067 4.692c.12 2.68 1.303 3.875 3.998 3.998 1.22.057 1.55.067 4.692.067s3.473-.01 4.692-.067c2.695-.123 3.878-1.318 3.998-3.998.058-1.22.067-1.549.067-4.691s-.01-3.474-.067-4.692c-.12-2.68-1.303-3.875-3.998-3.998C15.473 3.799 15.141 3.79 12 3.79zm0 2.977c-2.825 0-5.121 2.296-5.121 5.121s2.296 5.121 5.121 5.121 5.121-2.296 5.121-5.121-2.296-5.121-5.121-5.121zm0 8.583c-1.91 0-3.462-1.552-3.462-3.462s1.552-3.462 3.462-3.462 3.462 1.552 3.462 3.462-1.552 3.462-3.462 3.462zm4.494-6.818c-.71 0-1.284.574-1.284 1.284s.574 1.284 1.284 1.284 1.284-.574 1.284-1.284-.574-1.284-1.284-1.284z"/></svg>
+            </a>
+            <!-- Pinterest -->
+            <a href="#" aria-label="Pinterest">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.91 8.12 6.9 9.53.03-.23.05-.6.1-1 .2-1 1.2-5.1 1.2-5.1s-.3-.6-.3-1.5c0-1.4.8-2.4 1.8-2.4 1 0 1.4.7 1.4 1.5 0 1-.6 2.3-1 3.6-.3 1 1.2 1.8 2.2 1.8 2.6 0 4.6-3.4 4.6-7.3 0-3-2.2-5.1-5.3-5.1-3.6 0-5.7 2.7-5.7 5.4 0 1 .4 1.7.8 2.2.3.4.4.5.3 1-.1.4-.3 1.2-.4 1.5-.1.3-.2.4-.5.3-1.4-.7-2-2.7-2-4.5C4 7.1 6.6 4 10.3 4c3.8 0 6.8 2.8 6.8 6.2 0 4-2.4 7-5.8 7-1.1 0-2.2-.6-2.5-1.3 0 0-.6 2.3-.7 2.8-.3 1.1-1 2.3-1.5 3.1C9.1 21.7 10.5 22 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+            </a>
+        </div>
+        <p class="footer-copyright">&copy; 2025 Breathe Nature. All rights reserved.</p>
+    </footer>
+
+
+    <!-- 
+      Embedded JavaScript
+      Features:
+      - ES Module
+      - Preloader fade-out
+      - Theme Toggler (with localStorage)
+      - Scroll Progress Bar
+      - Intersection Observer for scroll animations
+      - Active nav link highlighting on scroll
+      - Three.js Hero Scene (floating particles)
+      - Hero cursor parallax
+      - Form submission handler
+    -->
+    <script type="module">
+      "use strict";
+      
+      // --- Helper: Debounce function ---
+      function debounce(func, wait = 10, immediate = false) {
+        let timeout;
+        return function() {
+          const context = this, args = arguments;
+          const later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+          };
+          const callNow = immediate && !timeout;
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+          if (callNow) func.apply(context, args);
+        };
+      }
+      
+      // --- Main App Logic ---
+      document.addEventListener('DOMContentLoaded', () => {
+
+        // --- 1. Preloader ---
+        const preloader = document.getElementById('preloader');
+        window.addEventListener('load', () => {
+          // Use a small delay to ensure all content is fully rendered
+          setTimeout(() => {
+            if(preloader) {
+              preloader.classList.add('hidden');
+            }
+          }, 200); // 200ms delay
+        });
+
+        // --- 2. Theme Toggler ---
+        const themeToggleButton = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+        
+        // Function to set theme
+        const applyTheme = (theme) => {
+          htmlElement.dataset.theme = theme;
+          localStorage.setItem('theme', theme);
+        };
+
+        // Get saved theme or system preference
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+        
+        // Apply initial theme
+        applyTheme(currentTheme);
+        
+        // Toggle button click listener
+        if (themeToggleButton) {
+          themeToggleButton.addEventListener('click', () => {
+            const newTheme = htmlElement.dataset.theme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+          });
+        }
+
+        // --- 3. Scroll Progress & Nav Highlighting ---
+        const progressBar = document.getElementById('scroll-progress-bar');
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        const handleScroll = () => {
+          // 3a. Scroll Progress Bar
+          const scrollTop = window.scrollY;
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const scrollPercent = (scrollTop / docHeight) * 100;
+          
+          if(progressBar) {
+            // Use CSS @property for smooth animation
+            document.body.style.setProperty('--scroll-progress', `${scrollPercent}%`);
+          }
+
+          // 3b. Active Nav Link Highlighting
+          const navHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-height') || '70');
+          let currentSection = '';
+          sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (scrollTop >= sectionTop - (navHeight * 1.5)) {
+              currentSection = section.getAttribute('id');
+            }
+          });
+
+          navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${currentSection}`) {
+              link.classList.add('active');
+            }
+          });
+        };
+        
+        // Use debounced scroll listener for performance
+        window.addEventListener('scroll', debounce(handleScroll, 15));
+        handleScroll(); // Run on load
+
+        // --- 4. Intersection Observer for Scroll Animations ---
+        const revealElements = document.querySelectorAll('.reveal-on-scroll');
+        
+        const observerCallback = (entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target); // Stop observing once visible
+            }
+          });
+        };
+        
+        const revealObserver = new IntersectionObserver(observerCallback, {
+          root: null, // viewport
+          threshold: 0.1, // 10% visible
+          rootMargin: '0px 0px -50px 0px' // Trigger slightly before it's fully in view
+        });
+        
+        revealElements.forEach(el => {
+          revealObserver.observe(el);
+        });
+
+        // --- 5. Contact Form Handler ---
+        const contactForm = document.getElementById('contact-form');
+        const successMessage = document.getElementById('form-success-message');
+
+        if(contactForm) {
+          contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // In a real app, you'd send this data to a server/API
+            // For this demo, we'll just show the success message
+            
+            // Get form data
+            const formData = new FormData(contactForm);
+            const name = formData.get('name');
+            console.log(`Form submitted by: ${name}`);
+            
+            // Hide form and show success message
+            contactForm.style.display = 'none';
+            if (successMessage) {
+              successMessage.style.display = 'block';
+            }
+            
+            // Optional: Reset form after a delay
+            setTimeout(() => {
+              contactForm.reset();
+              // You could also hide the message and show the form again
+              // successMessage.style.display = 'none';
+              // contactForm.style.display = 'grid';
+            }, 5000);
+          });
+        }
+        
+        // --- 6. Reflections "Read More" Toggle ---
+        const readMoreLinks = document.querySelectorAll('#reflections .read-more-link');
+        
+        readMoreLinks.forEach(link => {
+          link.addEventListener('click', (e) => {
+            e.preventDefault(); // Stop the link from jumping to href="#"
+            
+            const cardContent = link.closest('.card-content');
+            if (!cardContent) return;
+            
+            const moreContent = cardContent.querySelector('.more-content');
+            if (!moreContent) return;
+            
+            // Toggle the 'visible' class on the content
+            const isVisible = moreContent.classList.toggle('visible');
+            
+            // Toggle the 'is-open' class on the link itself for styling
+            link.classList.toggle('is-open', isVisible);
+            
+            // Update the link text
+            if (isVisible) {
+              link.textContent = 'Read Less';
+            } else {
+              link.textContent = 'Read More';
+            }
+          });
+        });
+        
+        // --- 7. Hero: Three.js Scene ---
+        const heroSection = document.getElementById('home');
+        const canvas = document.getElementById('three-canvas');
+        
+        if (canvas && typeof THREE !== 'undefined') {
+          let scene, camera, renderer, particles;
+          const particleColorLight = 0x2c4a3b; // Forest green
+          const particleColorDark = 0xf0f3f1;  // Off-white
+          let targetMouse = { x: 0, y: 0 };
+          let currentMouse = { x: 0, y: 0 };
+
+          const initThree = () => {
+            // Scene
+            scene = new THREE.Scene();
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 3;
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({
+              canvas: canvas,
+              alpha: true, // Transparent background
+              antialias: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Particles (Floating Leaves / Light)
+            const particlesGeometry = new THREE.BufferGeometry();
+            const count = 700;
+            const positions = new Float32Array(count * 3);
+
+            for (let i = 0; i < count * 3; i++) {
+              positions[i] = (Math.random() - 0.5) * 10;
+            }
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+            const particlesMaterial = new THREE.PointsMaterial({
+              size: 0.015,
+              color: htmlElement.dataset.theme === 'dark' ? particleColorDark : particleColorLight,
+              sizeAttenuation: true,
+              transparent: true,
+              opacity: 0.7
+            });
+
+            particles = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particles);
+            
+            // Update particle color on theme change
+            if (themeToggleButton) {
+              themeToggleButton.addEventListener('click', () => {
+                particlesMaterial.color.set(htmlElement.dataset.theme === 'dark' ? particleColorDark : particleColorLight);
+              });
+            }
+          };
+
+          const onWindowResize = () => {
+            if (camera) {
+              camera.aspect = window.innerWidth / window.innerHeight;
+              camera.updateProjectionMatrix();
+            }
+            if (renderer) {
+              renderer.setSize(window.innerWidth, window.innerHeight);
+              renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            }
+          };
+
+          const onMouseMove = (event) => {
+            // Normalize mouse position (-0.5 to 0.5)
+            targetMouse.x = (event.clientX / window.innerWidth) - 0.5;
+            targetMouse.y = (event.clientY / window.innerHeight) - 0.5;
+          };
+
+          const animate = () => {
+            requestAnimationFrame(animate);
+            const elapsedTime = Date.now() * 0.0001;
+
+            if (particles) {
+              // Animate particles
+              particles.rotation.y = elapsedTime * 0.2;
+              particles.rotation.x = elapsedTime * 0.1;
+            }
+            
+            // Lerp mouse for smooth camera movement
+            currentMouse.x += (targetMouse.x - currentMouse.x) * 0.05;
+            currentMouse.y += (targetMouse.y - currentMouse.y) * 0.05;
+
+            if (camera) {
+              // Update camera position based on smoothed mouse
+              camera.position.x = currentMouse.x * 0.5;
+              camera.position.y = -currentMouse.y * 0.5;
+              camera.lookAt(scene.position);
+            }
+
+            if (renderer && scene && camera) {
+              renderer.render(scene, camera);
+            }
+          };
+
+          // Check for reduced motion
+          const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          
+          if (!prefersReducedMotion) {
+            try {
+              initThree();
+              animate();
+              window.addEventListener('resize', debounce(onWindowResize, 50));
+              if (heroSection) {
+                heroSection.addEventListener('mousemove', debounce(onMouseMove, 20));
+              }
+            } catch (error) {
+              console.error("Failed to initialize Three.js scene:", error);
+              if (canvas) canvas.style.display = 'none'; // Hide canvas on error
+            }
+          } else {
+             if (canvas) canvas.style.display = 'none'; // Hide canvas if reduced motion is on
+           }
+
+          // --- 8. Hero: Cursor Parallax ---
+          const heroContent = document.querySelector('.hero-content');
+          if (heroContent && !prefersReducedMotion) {
+            if (heroSection) {
+              heroSection.addEventListener('mousemove', (e) => {
+                const x = (e.clientX - window.innerWidth / 2) / window.innerWidth;
+                const y = (e.clientY - window.innerHeight / 2) / window.innerHeight;
+                
+                // Move content in opposite direction of mouse
+                heroContent.style.transform = `translateX(${x * -30}px) translateY(${y * -20}px)`;
+                // Move 3D canvas slightly for depth
+                if (canvas) {
+                  canvas.style.transform = `translateX(${x * 15}px) translateY(${y * 10}px)`;
+                }
+              });
+            }
+          }
+        } else {
+          console.warn("Three.js library not found or canvas element missing.");
+        }
+        
+      });
+    </script>
+    
+</body>
+</html>
